@@ -1,30 +1,36 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import database.Fach;
+import client.StundenplanClient;
 
+import javax.swing.*;
 import java.io.IOException;
-import java.util.concurrent.*;
 
 public class Client {
-    public RestApiClient RAC;
+    public StundenplanClient client;
     public GUI gui;
 
-    public Client() throws IOException, InterruptedException {
-        RAC = new RestApiClient();
+    public Client() {
         gui = new GUI();
-        String logData = gui.register();
-        String[] arr = logData.split(":");
-        RAC.getToken(arr[0], arr[1]);
-
-        try {
-            gui.setFaecher(RAC.getResource("/schueler/faecherauswahl", Fach[].class));
-        } catch (ExecutionException | TimeoutException e) {
-            e.printStackTrace();
+        int n = JOptionPane.showConfirmDialog(null, "Hast du bereits einen Account?", "Anmeldung", JOptionPane.YES_NO_OPTION);
+        boolean isLoggedIn = false;
+        if((n == JOptionPane.NO_OPTION)) {
+            Credentials logData = gui.register();
+            if(logData != null) {
+                client = new StundenplanClient(logData.getUsername(), logData.getPassword());
+                isLoggedIn = true;
+            }
+        }
+        else {
+            Credentials logData = gui.login();
+            if(logData != null) {
+                client = new StundenplanClient(logData.getUsername(), logData.getPassword());
+                isLoggedIn = true;
+            }
+        }
+        if(isLoggedIn) {
+            gui.buildTimeTable();
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        Client client = new Client();
+    public static void main(String[] args) {
+        Client obj = new Client();
     }
 }

@@ -24,8 +24,6 @@ public class GUI extends JFrame implements ActionListener{
     private Object[] faecher;
 
     public GUI() {
-
-
         timetable = new List<>();
 
         mb = new JMenuBar();
@@ -46,20 +44,66 @@ public class GUI extends JFrame implements ActionListener{
         m2.add(m22);
         m22.addActionListener(this);
 
-        buildTimeTable();
+        //buildTimeTable();
     }
 
-    public String register() {
-        int n = JOptionPane.showConfirmDialog(null, "Hast du bereits einen Account?", "Anmeldung", JOptionPane.YES_NO_OPTION);
-        if(n == JOptionPane.NO_OPTION) {
-            final String nUsername = JOptionPane.showInputDialog(null, "Gib einen Usernamen ein:", null);
-            final String nPassword = JOptionPane.showInputDialog(null, "Gib ein Passwort ein:", null);
-            return nUsername + ":" + nPassword;
+    public Credentials register() {
+        final String username = JOptionPane.showInputDialog(null, "Gib einen Usernamen ein:", "Registrierung", JOptionPane.QUESTION_MESSAGE);
+        if(username != null) {
+            //final String password = JOptionPane.showInputDialog(null, "Passwort:", null);
+            JPanel panel = new JPanel();
+            JLabel label = new JLabel("Gib ein Passwort ein: ");
+            JPasswordField pass = new JPasswordField(16);
+            panel.add(label);
+            panel.add(pass);
+            String[] options = new String[]{"OK", "Cancel"};
+            int option = JOptionPane.showOptionDialog(null, panel, "Registrierung",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, options, options[1]);
+            if (option == 0) {
+                char[] pw = pass.getPassword();
+                return new Credentials(username, pw);
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Du musst ein Passwort eingeben,\n" + "um dich zu regestrieren.",
+                        "Warnung", JOptionPane.WARNING_MESSAGE);
+                return null;
+            }
         }
         else {
-            final String oUsername = JOptionPane.showInputDialog(null, "Username:", null);
-            final String oPassword = JOptionPane.showInputDialog(null, "Passwort:", null);
-            return oUsername + ":" + oPassword;
+            JOptionPane.showMessageDialog(null, "Du musst einen Usernamen eingeben,\n" + "um dich zu regestrieren.",
+                    "Warnung", JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+    }
+
+    public Credentials login() {
+        final String username = JOptionPane.showInputDialog(null, "Username:", "Anmeldung", JOptionPane.QUESTION_MESSAGE);
+        if(username != null) {
+            //final String password = JOptionPane.showInputDialog(null, "Passwort:", null);
+            JPanel panel = new JPanel();
+            JLabel label = new JLabel("Passwort: ");
+            JPasswordField pass = new JPasswordField(20);
+            panel.add(label);
+            panel.add(pass);
+            String[] options = new String[]{"OK", "Cancel"};
+            int option = JOptionPane.showOptionDialog(null, panel, "Anmeldung",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, options, options[1]);
+            if (option == 0) {
+                char[] pw = pass.getPassword();
+                return new Credentials(username, pw);
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Du musst ein Passwort eingeben,\n" + "um dich anzumelden.",
+                        "Warnung", JOptionPane.WARNING_MESSAGE);
+                return null;
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Du musst einen Usernamen eingeben,\n" + "um dich anzumelden.",
+                    "Warnung", JOptionPane.WARNING_MESSAGE);
+            return null;
         }
     }
 
