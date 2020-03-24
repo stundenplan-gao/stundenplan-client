@@ -1,11 +1,13 @@
 package client;
 
 import database.Fach;
+import database.NeuerNutzer;
 import database.Schueler;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 
 @Path("/schueler")
 public interface StundenplanAPI {
@@ -13,34 +15,43 @@ public interface StundenplanAPI {
     @GET
     @Path("/")
     @Produces({ MediaType.TEXT_PLAIN })
-    public Response index();
+    Response index();
 
     // Test method
     @GET
     @Path("/echo")
     @Produces({ MediaType.TEXT_PLAIN })
-    public String echo(@QueryParam("message") String message);
+    String echo(@QueryParam("message") String message);
 
     // Test method
     @GET
     @Path("/echo_auth")
     @Produces({ MediaType.TEXT_PLAIN })
-    public String echoAuth(@QueryParam("message") String message);
+    String echoAuth(@QueryParam("message") String message);
 
     @POST
     @Path("/login")
     @Produces({ MediaType.TEXT_PLAIN })
     @Consumes({ MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON })
-    public String authenticateUser(@QueryParam("username") String username,
-                                   @QueryParam("password") String password);
+    String authenticateUser(@QueryParam("username") String username,
+                            @QueryParam("password") String password);
+
+    @POST
+    @Path("/register")
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response registerUser(NeuerNutzer nutzer);
+
+    @DELETE
+    @Path("/delete/${username}")
+    Response deleteUser(@PathParam("username") String username);
 
     @GET
     @Path("/faecherauswahl")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Fach[] getFaecherList();
+    Fach[] getFaecherList();
 
     @GET
-    @Path("/schueler-mit-faechern/${benutzername}")
+    @Path("/schuelerdaten/${benutzername}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Schueler getSchuelerMitFaechern(@PathParam("benutzername") String benutzername);
+    Schueler getSchuelerMitFaechern(@PathParam("benutzername") String benutzername);
 }

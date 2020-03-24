@@ -1,19 +1,28 @@
 package client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.client.ClientResponseContext;
+import javax.ws.rs.client.ClientResponseFilter;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import database.Fach;
+import database.NeuerNutzer;
 import database.Schueler;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+
 
 public class StundenplanClient implements StundenplanAPI {
 
@@ -27,10 +36,10 @@ public class StundenplanClient implements StundenplanAPI {
 
         @Override
         public void filter(ClientRequestContext requestContext,
-                ClientResponseContext responseContext) throws IOException {
-            String body = new String(responseContext.getEntityStream().readAllBytes());
+                           ClientResponseContext responseContext) throws IOException {
+            /*String body = new String(responseContext.getEntityStream().readAllBytes());
 
-            if (!body.equals("") &&responseContext.getMediaType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
+            if (!body.equals("") && responseContext.getMediaType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -42,13 +51,13 @@ public class StundenplanClient implements StundenplanAPI {
                 System.err.println(body);
             }
 
-            responseContext.setEntityStream(new ByteArrayInputStream(body.getBytes()));
+            responseContext.setEntityStream(new ByteArrayInputStream(body.getBytes()));*/
         }
 
     }
 
     public static void main(String... args) {
-        StundenplanClient c = new StundenplanClient("ysprenger", "ysprenger".toCharArray());
+        StundenplanClient c = new StundenplanClient("ysprenger", "ysprenger".toCharArray(), "http://localhost:8080/Stundenplan_Server/stundenplan");
         System.err.println(c.echo("Testmessage"));
         try {
             System.err.println(c.echoAuth("Testmessage"));
@@ -75,16 +84,55 @@ public class StundenplanClient implements StundenplanAPI {
 
     protected String token;
 
-    public StundenplanClient(String username, char[] passwd) {
+    public StundenplanClient(String username, char[] passwd, String url) {
         client = (ResteasyClient) ClientBuilder.newBuilder().register(new JWTFilter()).build();
-        target = client.target("http://localhost:8080/Stundenplan_Server/stundenplan");
+        target = client.target(url);
         proxy = target.proxy(StundenplanAPI.class);
         token = proxy.authenticateUser(username, new String(passwd));
+    }
+
+    public StundenplanClient(String url) {
+        client = (ResteasyClient) ClientBuilder.newBuilder().register(new JWTFilter()).build();
+        target = client.target(url);
+        proxy = target.proxy(StundenplanAPI.class);
+        token = "";
+    }
+
+    public boolean isLoggedIn() {
+        return token != null && !token.equals("");
+    }
+
+    public boolean checkConnection() {
+        String testMsg = "Testing connection...";
+        return testMsg.equals(echo(testMsg));
+    }
+
+    public boolean checkAuth() {
+        String testMsg = "Testing connection...";
+        return testMsg.equals(echoAuth(testMsg));
+    }
+
+    public String login(String username, char[] password) {
+        return proxy.authenticateUser(username, new String(password));
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override
     public String authenticateUser(String username, String password) {
         return proxy.authenticateUser(username, password);
+    }
+
+    @Override
+    public Response registerUser(NeuerNutzer nutzer) {
+        return proxy.registerUser(nutzer);
+    }
+
+    @Override
+    public Response deleteUser(String username) {
+        return proxy.deleteUser(username);
     }
 
     @Override
@@ -94,21 +142,40 @@ public class StundenplanClient implements StundenplanAPI {
 
     @Override
     public String echoAuth(String message) {
-        return proxy.echoAuth(message);
+        try {
+            return proxy.echoAuth(message);
+        } catch (NotAuthorizedException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override
     public Fach[] getFaecherList() {
-        return proxy.getFaecherList();
+        try {
+            return proxy.getFaecherList();
+        } catch (NotAuthorizedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
     public Schueler getSchuelerMitFaechern(String benutzername) {
-        return proxy.getSchuelerMitFaechern(benutzername);
+        try {
+            return proxy.getSchuelerMitFaechern(benutzername);
+        } catch (NotAuthorizedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
     public Response index() {
         return proxy.index();
+    }
+
+    public void close() {
+        client.close();
     }
 }
