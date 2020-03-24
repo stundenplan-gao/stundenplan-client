@@ -50,17 +50,20 @@ public class GUI extends JFrame implements ActionListener{
     public Credentials register() {
         final String username = JOptionPane.showInputDialog(null, "Gib einen Usernamen ein:", "Registrierung", JOptionPane.QUESTION_MESSAGE);
         if(username != null) {
-            //final String password = JOptionPane.showInputDialog(null, "Passwort:", null);
             JPanel panel = new JPanel();
             JLabel label = new JLabel("Gib ein Passwort ein: ");
-            JPasswordField pass = new JPasswordField(16);
+            JPasswordField pass = new JPasswordField(20);
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
             panel.add(label);
             panel.add(pass);
+
             String[] options = new String[]{"OK", "Cancel"};
+
             int option = JOptionPane.showOptionDialog(null, panel, "Registrierung",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-                    null, options, options[1]);
-            if (option == 0) {
+                    null, options, pass);
+
+            if (option == JOptionPane.OK_OPTION) {
                 char[] pw = pass.getPassword();
                 return new Credentials(username, pw);
             }
@@ -80,17 +83,20 @@ public class GUI extends JFrame implements ActionListener{
     public Credentials login() {
         final String username = JOptionPane.showInputDialog(null, "Username:", "Anmeldung", JOptionPane.QUESTION_MESSAGE);
         if(username != null) {
-            //final String password = JOptionPane.showInputDialog(null, "Passwort:", null);
             JPanel panel = new JPanel();
             JLabel label = new JLabel("Passwort: ");
-            JPasswordField pass = new JPasswordField(22);
+            JPasswordField pass = new JPasswordField(20);
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
             panel.add(label);
             panel.add(pass);
+
             String[] options = new String[]{"OK", "Cancel"};
+
             int option = JOptionPane.showOptionDialog(null, panel, "Anmeldung",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-                    null, options, options[1]);
-            if (option == 0) {
+                    null, options, pass);
+
+            if (option == JOptionPane.OK_OPTION) {
                 char[] pw = pass.getPassword();
                 return new Credentials(username, pw);
             }
@@ -110,8 +116,11 @@ public class GUI extends JFrame implements ActionListener{
     public void buildTimeTable() {
         frameTT = new JFrame("Stundenplan");
         frameTT.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frameTT.setSize(700, 440);
+        frameTT.setSize(600, 440);
 
+        JTabbedPane tabbedPane = new JTabbedPane();
+
+        JPanel topPanel = new JPanel();
         JPanel pHead1 = new JPanel();
         lDay = new JLabel("Heute ist " + getDayOfWeek());
         lTime = new JLabel("und es ist " + getTime() + " Uhr");
@@ -121,7 +130,7 @@ public class GUI extends JFrame implements ActionListener{
         pHead1.add(lTime);
         pHead1.add(bVertretungsplan);
 
-        JPanel pTT = new JPanel(new GridLayout(10, 5));
+        JPanel pTT = new JPanel(new GridLayout(10, 5, 10, 10));
         JLabel[] jLabels = new JLabel[50];
         for(int i = 0; i < 50; i++) {
             jLabels[i] = new JLabel("| Dein Fach ");
@@ -146,14 +155,15 @@ public class GUI extends JFrame implements ActionListener{
                                 null);
                         if (s != null) {
                             String t = (String) JOptionPane.showInputDialog(frameTT,
-                                    "Welchen Lehrer hast du da?",
+                                    "Welchen Lehrer hast du da?\n" +
+                                    "(Gib den Lehrerkürzel ein)",
                                     "Lehrerauswahl",
                                     JOptionPane.PLAIN_MESSAGE,
                                     null,
                                     null,
-                                    "Lehrerkürzel");
+                                    null);
                             jLabels[finalJ].setText("| " + s);
-                            if(t != null) {
+                            if(t != null && !t.equals("")) {
                                 jLabels[finalJ].setForeground(Color.black);
                                 Data temp = new Data(s.toString(), t, finalJ);
                                 add(temp);
@@ -168,9 +178,15 @@ public class GUI extends JFrame implements ActionListener{
                 }
             });
         }
-        frameTT.getContentPane().add(BorderLayout.CENTER, pHead1);
-        frameTT.getContentPane().add(BorderLayout.WEST, pTT);
+        topPanel.add(pHead1);
+        topPanel.add(pTT);
+
+        tabbedPane.addTab("Stundenplan", null, topPanel);
+
+        //frameTT.getContentPane().add(BorderLayout.CENTER, pHead1);
+        //frameTT.getContentPane().add(BorderLayout.WEST, pTT);
         frameTT.getContentPane().add(BorderLayout.NORTH, mb);
+        frameTT.getContentPane().add(BorderLayout.CENTER, tabbedPane);
         frameTT.setVisible(true);
     }
 

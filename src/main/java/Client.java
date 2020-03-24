@@ -1,7 +1,6 @@
 import client.StundenplanClient;
 
 import javax.swing.*;
-import java.io.IOException;
 
 public class Client {
     public StundenplanClient client;
