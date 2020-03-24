@@ -4,18 +4,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jgrosshardt</groupId>
+    <groupId>org.stundenplan-gao</groupId>
     <artifactId>Stundenplan_Client</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.jgrosshardt</groupId>
-            <artifactId>Stundenplan_Server</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
 
         <!-- Compile Time REST API: JAX-RS -->
         <dependency>
@@ -89,20 +83,8 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>${basedir}/src</sourceDirectory>
-        <testSourceDirectory>${basedir}/src/test</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>${basedir}/src</directory>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>${basedir}/src-test</directory>
-            </testResource>
-        </testResources>
+        <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
         <outputDirectory>${basedir}/target/classes</outputDirectory>
-        <testOutputDirectory>${basedir}/target/test-classes</testOutputDirectory>
 
         <plugins>
             <plugin>
