@@ -77,7 +77,7 @@ public class StundenplanClient implements StundenplanAPI {
 
     public StundenplanClient(String username, char[] passwd) {
         client = (ResteasyClient) ClientBuilder.newBuilder().register(new JWTFilter()).build();
-        target = client.target("http://localhost:8080/Stundenplan_Server/stundenplan");
+        target = client.target("http://localhost:8080/stundenplan_server/stundenplan");
         proxy = target.proxy(StundenplanAPI.class);
         token = proxy.authenticateUser(username, new String(passwd));
     }

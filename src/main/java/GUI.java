@@ -83,7 +83,7 @@ public class GUI extends JFrame implements ActionListener{
             //final String password = JOptionPane.showInputDialog(null, "Passwort:", null);
             JPanel panel = new JPanel();
             JLabel label = new JLabel("Passwort: ");
-            JPasswordField pass = new JPasswordField(20);
+            JPasswordField pass = new JPasswordField(22);
             panel.add(label);
             panel.add(pass);
             String[] options = new String[]{"OK", "Cancel"};
@@ -138,7 +138,7 @@ public class GUI extends JFrame implements ActionListener{
                         JOptionPane.showMessageDialog(frameTT, "Warten auf Server Antwort.", "Please Wait", JOptionPane.INFORMATION_MESSAGE);
                     }
                     else {
-                        String s = (String) JOptionPane.showInputDialog(frameTT,
+                        Object s = JOptionPane.showInputDialog(frameTT,
                                 "Welches Fach hast du da?",
                                 "Fachauswahl",
                                 JOptionPane.PLAIN_MESSAGE,
@@ -151,15 +151,17 @@ public class GUI extends JFrame implements ActionListener{
                                     JOptionPane.PLAIN_MESSAGE,
                                     null,
                                     null,
-                                    "<html><i>Lehrerkürzel</i></html>");
+                                    "Lehrerkürzel");
                             jLabels[finalJ].setText("| " + s);
                             if(t != null) {
                                 jLabels[finalJ].setForeground(Color.black);
-                                Data temp = new Data(s, t, finalJ);
+                                Data temp = new Data(s.toString(), t, finalJ);
                                 add(temp);
                             }
                             else {
                                 jLabels[finalJ].setForeground(Color.red);
+                                JOptionPane.showMessageDialog(null, "Du musst noch einen Lehrer für das Fach festlegen.",
+                                        "Warnung", JOptionPane.WARNING_MESSAGE);
                             }
                         }
                     }
@@ -276,9 +278,5 @@ public class GUI extends JFrame implements ActionListener{
         else if(src == m12) { // close
             System.exit(0);
         }
-    }
-
-    public void writeMessage(String pMessage) {
-        //TODO
     }
 }

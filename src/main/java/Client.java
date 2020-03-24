@@ -26,6 +26,7 @@ public class Client {
             }
         }
         if(isLoggedIn) {
+            gui.setFaecher(client.getFaecherList());
             gui.buildTimeTable();
         }
     }
