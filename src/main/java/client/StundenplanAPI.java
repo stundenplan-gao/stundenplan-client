@@ -1,13 +1,10 @@
 package client;
 
-import database.Fach;
-import database.NeuerNutzer;
-import database.Schueler;
+import database.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 
 @Path("/schueler")
 public interface StundenplanAPI {
@@ -54,4 +51,19 @@ public interface StundenplanAPI {
     @Path("/schuelerdaten/{benutzername}")
     @Produces({ MediaType.APPLICATION_JSON })
     Schueler getSchuelerMitFaechern(@PathParam("benutzername") String benutzername);
+
+    @PUT
+    @Path("/schuelerdaten/{benutzername}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    Response storeSchuelerdaten(@PathParam("benutzername") String benutzername, Kurs[] kurse);
+
+    @GET
+    @Path("/kurse")
+    @Produces({MediaType.APPLICATION_JSON})
+    Kurs[] getKurse();
+
+    @GET
+    @Path("/vertretungsplan")
+    @Produces({ MediaType.APPLICATION_JSON })
+    Entfall[] getEntfaelle();
 }

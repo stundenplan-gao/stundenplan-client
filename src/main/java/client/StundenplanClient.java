@@ -3,7 +3,10 @@ package client;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -13,16 +16,12 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import database.Fach;
-import database.NeuerNutzer;
-import database.Schueler;
+import database.*;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-
-
 
 public class StundenplanClient implements StundenplanAPI {
 
@@ -57,7 +56,7 @@ public class StundenplanClient implements StundenplanAPI {
     }
 
     public static void main(String... args) {
-        StundenplanClient c = new StundenplanClient("ysprenger", "ysprenger".toCharArray(), "http://localhost:8080/Stundenplan_Server/stundenplan");
+        StundenplanClient c = new StundenplanClient("ysprenger", "ysprenger".toCharArray(), "http://localhost:8080/stundenplan_srver/stundenplan");
         System.err.println(c.echo("Testmessage"));
         try {
             System.err.println(c.echoAuth("Testmessage"));
@@ -112,8 +111,10 @@ public class StundenplanClient implements StundenplanAPI {
         return testMsg.equals(echoAuth(testMsg));
     }
 
-    public String login(String username, char[] password) {
-        return proxy.authenticateUser(username, new String(password));
+    public boolean login(String username, char[] password) {
+        String token = proxy.authenticateUser(username, new String(password));
+        setToken(token);
+        return token.isEmpty();
     }
 
     public void setToken(String token) {
@@ -173,6 +174,23 @@ public class StundenplanClient implements StundenplanAPI {
     @Override
     public Response index() {
         return proxy.index();
+    }
+
+    @GET
+    @Path("/kurse")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Kurs[] getKurse() {
+        return proxy.getKurse();
+    }
+
+    @Override
+    public Response storeSchuelerdaten(String benutzername, Kurs[] kurse) {
+        return proxy.storeSchuelerdaten(benutzername, kurse);
+    }
+
+    @Override
+    public Entfall[] getEntfaelle() {
+        return proxy.getEntfaelle();
     }
 
     public void close() {
