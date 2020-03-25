@@ -17,28 +17,14 @@ public class GUI extends JFrame implements ActionListener{
     private JMenuItem m11;
     private JMenuItem m12;
 
+    private JTabbedPane tabbedPane;
+
+    private JButton bVertretungsplan;
+
     private Object[] faecher;
 
     public GUI() {
         timetable = new List<>();
-
-        mb = new JMenuBar();
-        JMenu m1 = new JMenu("File");
-        mb.add(m1);
-        m11 = new JMenuItem("Reset");
-        m12 = new JMenuItem("Close");
-        m1.add(m11);
-        m11.addActionListener(this);
-        m1.add(m12);
-        m12.addActionListener(this);
-        JMenu m2 = new JMenu("Help");
-        mb.add(m2);
-        JMenuItem m21 = new JMenuItem("placeholder1");
-        JMenuItem m22 = new JMenuItem("placeholder2");
-        m2.add(m21);
-        m21.addActionListener(this);
-        m2.add(m22);
-        m22.addActionListener(this);
     }
 
     public NeuerNutzer register() {
@@ -79,7 +65,6 @@ public class GUI extends JFrame implements ActionListener{
             }
         }
         else {
-            //JOptionPane.showMessageDialog(null, "Ein oder mehrere Felder wurden nicht ausgefüllt!", "Warnung", JOptionPane.WARNING_MESSAGE);
             return null;
         }
     }
@@ -87,9 +72,9 @@ public class GUI extends JFrame implements ActionListener{
     public NeuerNutzer login(){
         JPanel panel = new JPanel();
         JLabel lun = new JLabel("Username:");
-        JTextField tun = new JTextField("ysprenger");
+        JTextField tun = new JTextField("tgoetzke");
         JLabel lpw = new JLabel("Passwort:");
-        JPasswordField passF = new JPasswordField("ysprenger", 20);
+        JPasswordField passF = new JPasswordField("tgoetzke", 20);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.add(lun);
         panel.add(tun);
@@ -112,10 +97,29 @@ public class GUI extends JFrame implements ActionListener{
             }
         }
         else {
-            JOptionPane.showMessageDialog(null, "Username oder Passwort wurden nicht ausgefüllt!",
-                    "Warnung", JOptionPane.WARNING_MESSAGE);
             return null;
         }
+    }
+
+    public void setup() {
+        mb = new JMenuBar();
+        JMenu m1 = new JMenu("File");
+        mb.add(m1);
+        m11 = new JMenuItem("Reset");
+        m12 = new JMenuItem("Close");
+        m1.add(m11);
+        m11.addActionListener(this);
+        m1.add(m12);
+        m12.addActionListener(this);
+        JMenu m2 = new JMenu("Help");
+        mb.add(m2);
+        JMenuItem m21 = new JMenuItem("placeholder1");
+        JMenuItem m22 = new JMenuItem("placeholder2");
+        m2.add(m21);
+        m21.addActionListener(this);
+        m2.add(m22);
+        m22.addActionListener(this);
+        buildTimeTable();
     }
 
     public void buildTimeTable() {
@@ -124,24 +128,29 @@ public class GUI extends JFrame implements ActionListener{
         frame.setSize(500, 440);
         GUIUtil.installBoundsPersistence(frame, "stundenplan", 500, 440);
 
-        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane();
 
         JPanel topPanel = new JPanel();
         JPanel pHead = new JPanel();
-        JLabel lDay = new JLabel("<html>Heute ist <font color='#008B8B'>" + getDayOfWeek() + "</font></html>");
-        JLabel lTime = new JLabel("<html>und es ist <font color='#008B8B'>" + getTime() + "</font> Uhr</html>");
-        JButton bVertretungsplan = new JButton("zum Vertretungsplan");
+        JLabel lDay = new JLabel("<html>Heute ist <font color='#008B8B'><b>" + getDayOfWeek() + "</b></font></html>");
+        JLabel lTime = new JLabel("<html>und es ist <font color='#008B8B'><b>" + getTime() + "</b></font> Uhr</html>");
+        bVertretungsplan = new JButton("<html><i>zum <u>V</u>ertretungsplan</i></html>");
         bVertretungsplan.addActionListener(this);
         pHead.add(lDay);
         pHead.add(lTime);
         pHead.add(bVertretungsplan);
 
         JPanel pTT = new JPanel(new GridLayout(10, 5, 10, 10));
+        //GridBagLayout gridBag = new GridBagLayout();
+        //ridBagConstraints c = new GridBagConstraints();
+        //pTT.setLayout(gridBag);
+
         JLabel[] jLabels = new JLabel[50];
         for(int i = 0; i < 50; i++) {
             jLabels[i] = new JLabel("| Dein Fach ");
             jLabels[i].setForeground(Color.gray);
-            jLabels[i].setHorizontalTextPosition(JLabel.LEFT);
+            jLabels[i].setHorizontalTextPosition(JLabel.CENTER);
+            //gridBag.setConstraints(jLabels[i], c);
             pTT.add(jLabels[i]);
         }
         for(int j = 0; j < jLabels.length; j++) {
@@ -184,7 +193,6 @@ public class GUI extends JFrame implements ActionListener{
                 }
             });
         }
-
         topPanel.add(pHead);
         topPanel.add(pTT);
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
@@ -193,7 +201,9 @@ public class GUI extends JFrame implements ActionListener{
         JLabel lRP = new JLabel("hier kommt der Vertretungsplan hin");
         pRP.add(lRP);
 
-        tabbedPane.addTab("Stundenplan", null, topPanel);
+        JScrollPane scrollPane = new JScrollPane(topPanel);
+
+        tabbedPane.addTab("Stundenplan", null, scrollPane);
         tabbedPane.addTab("Vertretungsplan", null, pRP);
 
         frame.getContentPane().add(BorderLayout.NORTH, mb);
@@ -267,10 +277,14 @@ public class GUI extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
         if(src == m11) { //reset
+            frame.dispose();
             buildTimeTable();
         }
         else if(src == m12) { // close
             System.exit(0);
+        }
+        else if(src == bVertretungsplan) {
+            tabbedPane.setSelectedIndex(1);
         }
     }
 }

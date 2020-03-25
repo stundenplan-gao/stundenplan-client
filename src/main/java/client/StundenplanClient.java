@@ -3,10 +3,7 @@ package client;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -114,7 +111,7 @@ public class StundenplanClient implements StundenplanAPI {
     public boolean login(String username, char[] password) {
         String token = proxy.authenticateUser(username, new String(password));
         setToken(token);
-        return token.isEmpty();
+        return !token.isEmpty();
     }
 
     public void setToken(String token) {
@@ -176,21 +173,31 @@ public class StundenplanClient implements StundenplanAPI {
         return proxy.index();
     }
 
-    @GET
-    @Path("/kurse")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Override
     public Kurs[] getKurse() {
         return proxy.getKurse();
     }
 
     @Override
-    public Response storeSchuelerdaten(String benutzername, Kurs[] kurse) {
-        return proxy.storeSchuelerdaten(benutzername, kurse);
+    public Response storeSchuelerdaten(String benutzername, Schueler schueler) {
+        return proxy.storeSchuelerdaten(benutzername, schueler);
+    }
+
+    @Override
+    public Response storeSchuelerKurse(String benutzername, Kurs[] kurse) {
+        return proxy.storeSchuelerKurse(benutzername, kurse);
     }
 
     @Override
     public Entfall[] getEntfaelle() {
         return proxy.getEntfaelle();
+    }
+
+    @PUT
+    @Path("/changepassword/{benutzername}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response changePassword(@PathParam("benutzername") String benutzername, String password) {
+        return proxy.changePassword(benutzername, password);
     }
 
     public void close() {

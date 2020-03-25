@@ -54,8 +54,13 @@ public interface StundenplanAPI {
 
     @PUT
     @Path("/schuelerdaten/{benutzername}")
-    @Produces({ MediaType.APPLICATION_JSON })
-    Response storeSchuelerdaten(@PathParam("benutzername") String benutzername, Kurs[] kurse);
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response storeSchuelerdaten(@PathParam("benutzername") String benutzername, Schueler schueler);
+
+    @PUT
+    @Path("/schuelerdaten/{benutzername}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    Response storeSchuelerKurse(@PathParam("benutzername") String benutzername, Kurs[] kurse);
 
     @GET
     @Path("/kurse")
@@ -66,4 +71,9 @@ public interface StundenplanAPI {
     @Path("/vertretungsplan")
     @Produces({ MediaType.APPLICATION_JSON })
     Entfall[] getEntfaelle();
+
+    @PUT
+    @Path("/changepassword/{benutzername}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response changePassword(@PathParam("benutzername") String benutzername, String password);
 }
