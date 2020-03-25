@@ -1,10 +1,13 @@
 import client.StundenplanClient;
 import database.NeuerNutzer;
 import database.Schueler;
+import database.Stufe;
 import util.GUIUtil;
 
 import javax.swing.*;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Client {
     private final static String SERVER_URL;
@@ -13,7 +16,7 @@ public class Client {
     }
     public StundenplanClient client;
     public GUI gui;
-    private Schueler my;
+    private Schueler me;
 
     public Client() {
         gui = new GUI();
@@ -31,7 +34,6 @@ public class Client {
             while (!client.isLoggedIn()) {
                 NeuerNutzer logData = gui.login();
                 if (logData != null) {
-                    //String token = client.login(logData.getBenutzername(), logData.getPasswort().toCharArray());
                     if (!client.login(logData.getBenutzername(), logData.getPasswort().toCharArray())) {
                         String[] warningOps = new String[]{"Zurück", "Exit"};
                         int warning = JOptionPane.showOptionDialog(null, "Falsche Anmeldedaten.",
@@ -40,7 +42,7 @@ public class Client {
                             System.exit(0);
                         }
                     }
-                    my = client.getSchuelerMitFaechern(logData.getBenutzername());
+                    me = client.getSchuelerMitFaechern(logData.getBenutzername());
                 }
                 else {
                     String[] warningOps = new String[]{"Zurück", "Exit"};
@@ -58,11 +60,43 @@ public class Client {
 
         if(client.isLoggedIn()) {
             gui.setFaecher(client.getFaecherList());
+            gui.setSchueler(me);
             gui.setup();
         }
         else {
             System.exit(0);
         }
+    }
+
+    public String[] getStufen() {
+        java.util.List<Stufe> stufen = Arrays.asList(client.getStufen());
+        java.util.List<String> list = new ArrayList<>();
+        for (Stufe s : stufen) {
+            String stufe = s.getStufe();
+            if (stufe != null)
+                list.add(stufe);
+        }
+        String[] array = list.toArray(new String[0]);
+        Arrays.sort(array);
+        return array;
+        //gui.setStufen(array);
+    }
+
+    public String getStufe() {
+        JPanel panel = new JPanel();
+        JLabel label = new JLabel("Und jetzt wähl bitte noch deine Stufe aus:");
+        JComboBox cbStufen = new JComboBox(getStufen());
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(label);
+        panel.add(cbStufen);
+        String[] options = new String[]{"OK", "Cancel"};
+        int op = JOptionPane.showOptionDialog(null, panel, "Deine Stufe",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, cbStufen);
+        if(op == JOptionPane.OK_OPTION) {
+            return  (String) cbStufen.getSelectedItem();
+        }
+        return "";
     }
 
     public void registration() {
@@ -72,7 +106,9 @@ public class Client {
                 Response response = client.registerUser(logData);
                 if(response.getStatus() == 200) {
                     client.login(logData.getBenutzername(), logData.getPasswort().toCharArray());
-                    my = client.getSchuelerMitFaechern(logData.getBenutzername());
+                    me = client.getSchuelerMitFaechern(logData.getBenutzername());
+                    me.setStufe(new Stufe(getStufe()));
+                    client.storeSchuelerdaten(logData.getBenutzername(), me);
                 }
                 else if(response.getStatus() == 420) {
                     String[] opts = new String[]{"Zurück", "Exit"};

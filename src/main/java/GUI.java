@@ -1,15 +1,20 @@
+import database.Kurs;
 import database.NeuerNutzer;
+import database.Schueler;
+import database.Stunde;
 import util.GUIUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 import java.util.TimeZone;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 public class GUI extends JFrame implements ActionListener{
     private List<Data> timetable;
+    private Schueler schueler;
 
     private JFrame frame;
 
@@ -21,6 +26,7 @@ public class GUI extends JFrame implements ActionListener{
 
     private JButton bVertretungsplan;
 
+    private String[] stufen;
     private Object[] faecher;
 
     public GUI() {
@@ -131,9 +137,11 @@ public class GUI extends JFrame implements ActionListener{
         tabbedPane = new JTabbedPane();
 
         JPanel topPanel = new JPanel();
+
         JPanel pHead = new JPanel();
         JLabel lDay = new JLabel("<html>Heute ist <font color='#008B8B'><b>" + getDayOfWeek() + "</b></font></html>");
         JLabel lTime = new JLabel("<html>und es ist <font color='#008B8B'><b>" + getTime() + "</b></font> Uhr</html>");
+        //cbStufen.addActionListener(this);
         bVertretungsplan = new JButton("<html><i>zum <u>V</u>ertretungsplan</i></html>");
         bVertretungsplan.addActionListener(this);
         pHead.add(lDay);
@@ -146,9 +154,21 @@ public class GUI extends JFrame implements ActionListener{
         //pTT.setLayout(gridBag);
 
         JLabel[] jLabels = new JLabel[50];
+        Set<Kurs> kurse = schueler.getKurse();
+        if(!kurse.isEmpty()) {
+            for(Kurs k : kurse) {
+                String fach = k.getFach().getFach();
+                Set<Stunde> stunden = k.getStunden();
+                for(Stunde s : stunden) {
+                    jLabels[(s.getStunde()-1)*5 + (s.getTag()-1)] = new JLabel(fach);
+                }
+            }
+        }
         for(int i = 0; i < 50; i++) {
-            jLabels[i] = new JLabel("| Dein Fach ");
-            jLabels[i].setForeground(Color.gray);
+            if(jLabels[i] == null) {
+                jLabels[i] = new JLabel("| Dein Fach ");
+                jLabels[i].setForeground(Color.gray);
+            }
             jLabels[i].setHorizontalTextPosition(JLabel.CENTER);
             //gridBag.setConstraints(jLabels[i], c);
             pTT.add(jLabels[i]);
@@ -268,6 +288,10 @@ public class GUI extends JFrame implements ActionListener{
         Date date = cal.getTime();
         SimpleDateFormat f = new SimpleDateFormat("HH:mm");
         return f.format(date);
+    }
+
+    public void setSchueler(Schueler schueler) {
+        this.schueler = schueler;
     }
 
     public void setFaecher(Object[] faecher) {
