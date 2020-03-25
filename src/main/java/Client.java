@@ -13,19 +13,7 @@ public class Client {
         int n = JOptionPane.showConfirmDialog(null, "Hast du bereits einen Account?", "Anmeldung", JOptionPane.YES_NO_OPTION);
         client = new StundenplanClient("http://localhost:8080/stundenplan_server/stundenplan");
         if((n == JOptionPane.NO_OPTION)) {
-            while (!client.isLoggedIn()) {
-                NeuerNutzer logData = gui.register();
-                if (logData != null) {
-                    Response response = client.registerUser(logData);
-                    if(response.getStatus() < 400) { //TODO muss zu '== 200' geändert werden
-                        client.setToken(client.login(logData.getBenutzername(), logData.getPasswort().toCharArray()));
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(null, "Username oder Passwort falsch oder schon vergeben!",
-                                "Warnung", JOptionPane.WARNING_MESSAGE);
-                    }
-                }
-            }
+            registration();
         }
         else {
             while (!client.isLoggedIn()) {
@@ -44,6 +32,42 @@ public class Client {
         if(client.isLoggedIn()) {
             gui.setFaecher(client.getFaecherList());
             gui.buildTimeTable();
+        }
+    }
+
+    public void registration() {
+        while (!client.isLoggedIn()) {
+            NeuerNutzer logData = gui.register();
+            if (logData != null) {
+                Response response = client.registerUser(logData);
+                if(response.getStatus() == 200) {
+                    client.setToken(client.login(logData.getBenutzername(), logData.getPasswort().toCharArray()));
+                }
+                else if(response.getStatus() == 420) {
+                    String[] opts = new String[]{"Try again", "Exit"};
+                    int warning = JOptionPane.showOptionDialog(null, "Dein Username muss auf '@gao-online.de' enden!",
+                            "Warnung", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, opts, opts[0]);
+                    if(warning == JOptionPane.CANCEL_OPTION) {
+                        break;
+                    }
+                }
+                else if(response.getStatus() == 422) {
+                    String[] opts = new String[]{"Try again", "Exit"};
+                    int warning = JOptionPane.showOptionDialog(null, "Dein Username ist leider schon vergeben!",
+                            "Warnung", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, opts, opts[0]);
+                    if(warning == JOptionPane.CANCEL_OPTION) {
+                        break;
+                    }
+                }
+            }
+            else {
+                String[] opts = new String[]{"Try again", "Exit"};
+                int warning = JOptionPane.showOptionDialog(null, "Ein oder mehrere Felder wurden nicht ausgefüllt!",
+                        "Warnung", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, opts, opts[0]);
+                if(warning == JOptionPane.NO_OPTION || warning == JOptionPane.CANCEL_OPTION) {
+                    break;
+                }
+            }
         }
     }
 

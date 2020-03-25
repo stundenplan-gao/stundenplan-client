@@ -10,18 +10,11 @@ import javax.swing.*;
 public class GUI extends JFrame implements ActionListener{
     private List<Data> timetable;
 
-    private JFrame frameTT;
-    private JFrame frameRP;
+    private JFrame frame;
 
     private JMenuBar mb;
     private JMenuItem m11;
     private JMenuItem m12;
-
-    private JLabel lDay;
-    private JLabel lTime;
-
-    private JButton bVertretungsplan;
-    private JButton bStundenplan;
 
     private Object[] faecher;
 
@@ -85,8 +78,7 @@ public class GUI extends JFrame implements ActionListener{
             }
         }
         else {
-            JOptionPane.showMessageDialog(null, "Eins oder mehrere der auszufüllenden Felder wurden nicht ausgefüllt!",
-                    "Warnung", JOptionPane.WARNING_MESSAGE);
+            //JOptionPane.showMessageDialog(null, "Ein oder mehrere Felder wurden nicht ausgefüllt!", "Warnung", JOptionPane.WARNING_MESSAGE);
             return null;
         }
     }
@@ -94,9 +86,9 @@ public class GUI extends JFrame implements ActionListener{
     public NeuerNutzer login(){
         JPanel panel = new JPanel();
         JLabel lun = new JLabel("Username:");
-        JTextField tun = new JTextField();
+        JTextField tun = new JTextField("ysprenger");
         JLabel lpw = new JLabel("Passwort:");
-        JPasswordField passF = new JPasswordField(20);
+        JPasswordField passF = new JPasswordField("ysprenger", 20);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.add(lun);
         panel.add(tun);
@@ -126,21 +118,21 @@ public class GUI extends JFrame implements ActionListener{
     }
 
     public void buildTimeTable() {
-        frameTT = new JFrame("Stundenplan");
-        frameTT.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frameTT.setSize(500, 440);
+        frame = new JFrame("Stundenplan");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(500, 440);
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
         JPanel topPanel = new JPanel();
-        JPanel pHead1 = new JPanel();
-        lDay = new JLabel("<html>Heute ist <font color='#008B8B'>" + getDayOfWeek() + "</font></html>");
-        lTime = new JLabel("<html>und es ist <font color='#008B8B'>" + getTime() + "</font> Uhr</html>");
-        bVertretungsplan = new JButton("zum Vertretungsplan");
+        JPanel pHead = new JPanel();
+        JLabel lDay = new JLabel("<html>Heute ist <font color='#008B8B'>" + getDayOfWeek() + "</font></html>");
+        JLabel lTime = new JLabel("<html>und es ist <font color='#008B8B'>" + getTime() + "</font> Uhr</html>");
+        JButton bVertretungsplan = new JButton("zum Vertretungsplan");
         bVertretungsplan.addActionListener(this);
-        pHead1.add(lDay);
-        pHead1.add(lTime);
-        pHead1.add(bVertretungsplan);
+        pHead.add(lDay);
+        pHead.add(lTime);
+        pHead.add(bVertretungsplan);
 
         JPanel pTT = new JPanel(new GridLayout(10, 5, 10, 10));
         JLabel[] jLabels = new JLabel[50];
@@ -156,17 +148,17 @@ public class GUI extends JFrame implements ActionListener{
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if(faecher == null) {
-                        JOptionPane.showMessageDialog(frameTT, "Warten auf Server Antwort.", "Please Wait", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "Warten auf Server Antwort.", "Please Wait", JOptionPane.INFORMATION_MESSAGE);
                     }
                     else {
-                        Object s = JOptionPane.showInputDialog(frameTT,
+                        Object s = JOptionPane.showInputDialog(frame,
                                 "Welches Fach hast du da?",
                                 "Fachauswahl",
                                 JOptionPane.PLAIN_MESSAGE,
                                 null, faecher,
                                 null);
                         if (s != null) {
-                            String t = (String) JOptionPane.showInputDialog(frameTT,
+                            String t = (String) JOptionPane.showInputDialog(frame,
                                     "Welchen Lehrer hast du da?\n" +
                                     "(Gib den Lehrerkürzel ein)",
                                     "Lehrerauswahl",
@@ -191,8 +183,9 @@ public class GUI extends JFrame implements ActionListener{
             });
         }
 
-        topPanel.add(pHead1);
+        topPanel.add(pHead);
         topPanel.add(pTT);
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
 
         JPanel pRP = new JPanel();
         JLabel lRP = new JLabel("hier kommt der Vertretungsplan hin");
@@ -201,9 +194,9 @@ public class GUI extends JFrame implements ActionListener{
         tabbedPane.addTab("Stundenplan", null, topPanel);
         tabbedPane.addTab("Vertretungsplan", null, pRP);
 
-        frameTT.getContentPane().add(BorderLayout.NORTH, mb);
-        frameTT.getContentPane().add(BorderLayout.CENTER, tabbedPane);
-        frameTT.setVisible(true);
+        frame.getContentPane().add(BorderLayout.NORTH, mb);
+        frame.getContentPane().add(BorderLayout.CENTER, tabbedPane);
+        frame.setVisible(true);
     }
 
     public void add(Data d) {
@@ -272,8 +265,7 @@ public class GUI extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
         if(src == m11) { //reset
-            System.exit(0);
-            //buildTimeTable();
+            buildTimeTable();
         }
         else if(src == m12) { // close
             System.exit(0);
