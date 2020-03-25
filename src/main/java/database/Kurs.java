@@ -83,6 +83,10 @@ public class Kurs {
         this.stufe = stufe;
     }
 
+    public Lehrer getLehrer() {
+        return lehrer;
+    }
+
     public void setLehrer(Lehrer lehrer) {
         this.lehrer = lehrer;
     }

@@ -60,6 +60,7 @@ public class Client {
 
         if(client.isLoggedIn()) {
             gui.setFaecher(client.getFaecherList());
+            gui.setKurse(client.getKurse());
             gui.setSchueler(me);
             gui.setup();
         }

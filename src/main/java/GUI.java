@@ -1,14 +1,8 @@
-import database.Kurs;
-import database.NeuerNutzer;
-import database.Schueler;
-import database.Stunde;
+import database.*;
 import util.GUIUtil;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -28,6 +22,7 @@ public class GUI extends JFrame implements ActionListener{
 
     private String[] stufen;
     private Object[] faecher;
+    private Kurs[] alleKurse;
 
     public GUI() {
         timetable = new List<>();
@@ -182,14 +177,14 @@ public class GUI extends JFrame implements ActionListener{
                         JOptionPane.showMessageDialog(frame, "Warten auf Server Antwort.", "Please Wait", JOptionPane.INFORMATION_MESSAGE);
                     }
                     else {
-                        Object s = JOptionPane.showInputDialog(frame,
+                        Object fach = JOptionPane.showInputDialog(frame,
                                 "Welches Fach hast du da?",
                                 "Fachauswahl",
                                 JOptionPane.PLAIN_MESSAGE,
                                 null, faecher,
                                 null);
-                        if (s != null) {
-                            String t = (String) JOptionPane.showInputDialog(frame,
+                        if (fach != null) {
+                            String lehrer = (String) JOptionPane.showInputDialog(frame,
                                     "Welchen Lehrer hast du da?\n" +
                                     "(Gib den Lehrerkürzel ein)",
                                     "Lehrerauswahl",
@@ -197,11 +192,17 @@ public class GUI extends JFrame implements ActionListener{
                                     null,
                                     null,
                                     null);
-                            jLabels[finalJ].setText("| " + s);
-                            if(t != null && !t.equals("")) {
+                            jLabels[finalJ].setText("| " + fach);
+                            if(lehrer != null && !lehrer.equals("")) {
                                 jLabels[finalJ].setForeground(Color.black);
-                                Data temp = new Data(s.toString(), t, finalJ);
-                                add(temp);
+                                ArrayList<Kurs> kurse = new ArrayList<>(Arrays.asList(alleKurse));
+                                kurse.removeIf(k ->
+                                        !k.getFach().getFach().equals(((Fach) fach).getFach()) ||
+                                                !k.getLehrer().getKuerzel().equals(lehrer)
+                                );
+                                Kurs[] arr = kurse.toArray(new Kurs[0]);
+                                Kurs kurs = (Kurs) JOptionPane.showInputDialog(frame, "Wie lautet deine Kursbeueichnung?", "Kusauswahl",
+                                        JOptionPane.PLAIN_MESSAGE, null, arr, null);
                             }
                             else {
                                 jLabels[finalJ].setForeground(Color.red);
@@ -296,6 +297,10 @@ public class GUI extends JFrame implements ActionListener{
 
     public void setFaecher(Object[] faecher) {
         SwingUtilities.invokeLater(() -> this.faecher = faecher);
+    }
+
+    public void setKurse(Kurs[] kurse) {
+        SwingUtilities.invokeLater(() -> this.alleKurse = kurse);
     }
 
     public void actionPerformed(ActionEvent e) {
