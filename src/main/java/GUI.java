@@ -1,3 +1,5 @@
+import database.NeuerNutzer;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,71 +45,81 @@ public class GUI extends JFrame implements ActionListener{
         m21.addActionListener(this);
         m2.add(m22);
         m22.addActionListener(this);
-
-        //buildTimeTable();
     }
 
-    public Credentials register() {
-        final String username = JOptionPane.showInputDialog(null, "Gib einen Usernamen ein:", "Registrierung", JOptionPane.QUESTION_MESSAGE);
-        if(username != null) {
-            JPanel panel = new JPanel();
-            JLabel label = new JLabel("Gib ein Passwort ein: ");
-            JPasswordField pass = new JPasswordField(20);
-            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-            panel.add(label);
-            panel.add(pass);
+    public NeuerNutzer register() {
+        JPanel panel = new JPanel();
+        JLabel lfn = new JLabel("Gib hier deinen Vornamen ein:");
+        JTextField tfn = new JTextField();
+        JLabel lln = new JLabel("Gib hier deinen Nachnamen ein:");
+        JTextField tln = new JTextField();
+        JLabel lun = new JLabel("Gib hier einen Usernamen ein:");
+        JTextField tun = new JTextField();
+        JLabel lpw = new JLabel("Gib hier ein Passwort ein:");
+        JPasswordField passF = new JPasswordField(20);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(lfn);
+        panel.add(tfn);
+        panel.add(lln);
+        panel.add(tln);
+        panel.add(lun);
+        panel.add(tun);
+        panel.add(lpw);
+        panel.add(passF);
 
-            String[] options = new String[]{"OK", "Cancel"};
+        String[] options = new String[]{"OK", "Cancel"};
 
-            int option = JOptionPane.showOptionDialog(null, panel, "Registrierung",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-                    null, options, pass);
-
-            if (option == JOptionPane.OK_OPTION) {
-                char[] pw = pass.getPassword();
-                return new Credentials(username, pw);
+        int op = JOptionPane.showOptionDialog(null, panel, "Registrierung",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, tfn);
+        if(!tfn.getText().isEmpty() || !tln.getText().isEmpty() || !tun.getText().isEmpty() || passF.getPassword().length != 0) {
+            if (op == JOptionPane.OK_OPTION) {
+                String firstname = tfn.getText();
+                String lastname = tln.getText();
+                String username = tun.getText();
+                char[] password = passF.getPassword();
+                return new NeuerNutzer(firstname, lastname, username, new String(password));
             }
             else {
-                JOptionPane.showMessageDialog(null, "Du musst ein Passwort eingeben,\n" + "um dich zu regestrieren.",
-                        "Warnung", JOptionPane.WARNING_MESSAGE);
                 return null;
             }
         }
         else {
-            JOptionPane.showMessageDialog(null, "Du musst einen Usernamen eingeben,\n" + "um dich zu regestrieren.",
+            JOptionPane.showMessageDialog(null, "Eins oder mehrere der auszufüllenden Felder wurden nicht ausgefüllt!",
                     "Warnung", JOptionPane.WARNING_MESSAGE);
             return null;
         }
     }
 
-    public Credentials login() {
-        final String username = JOptionPane.showInputDialog(null, "Username:", "Anmeldung", JOptionPane.QUESTION_MESSAGE);
-        if(username != null) {
-            JPanel panel = new JPanel();
-            JLabel label = new JLabel("Passwort: ");
-            JPasswordField pass = new JPasswordField(20);
-            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-            panel.add(label);
-            panel.add(pass);
+    public NeuerNutzer login(){
+        JPanel panel = new JPanel();
+        JLabel lun = new JLabel("Username:");
+        JTextField tun = new JTextField();
+        JLabel lpw = new JLabel("Passwort:");
+        JPasswordField passF = new JPasswordField(20);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(lun);
+        panel.add(tun);
+        panel.add(lpw);
+        panel.add(passF);
 
-            String[] options = new String[]{"OK", "Cancel"};
+        String[] options = new String[]{"OK", "Cancel"};
 
-            int option = JOptionPane.showOptionDialog(null, panel, "Anmeldung",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-                    null, options, pass);
-
-            if (option == JOptionPane.OK_OPTION) {
-                char[] pw = pass.getPassword();
-                return new Credentials(username, pw);
+        int op = JOptionPane.showOptionDialog(null, panel, "Anmeldung",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, tun);
+        if(!tun.getText().isEmpty() || passF.getPassword().length != 0) {
+            if (op == JOptionPane.OK_OPTION) {
+                String username = tun.getText();
+                char[] password = passF.getPassword();
+                return new NeuerNutzer("", "", username, new String(password));
             }
             else {
-                JOptionPane.showMessageDialog(null, "Du musst ein Passwort eingeben,\n" + "um dich anzumelden.",
-                        "Warnung", JOptionPane.WARNING_MESSAGE);
                 return null;
             }
         }
         else {
-            JOptionPane.showMessageDialog(null, "Du musst einen Usernamen eingeben,\n" + "um dich anzumelden.",
+            JOptionPane.showMessageDialog(null, "Username oder Passwort wurden nicht ausgefüllt!",
                     "Warnung", JOptionPane.WARNING_MESSAGE);
             return null;
         }
@@ -116,14 +128,14 @@ public class GUI extends JFrame implements ActionListener{
     public void buildTimeTable() {
         frameTT = new JFrame("Stundenplan");
         frameTT.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frameTT.setSize(600, 440);
+        frameTT.setSize(500, 440);
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
         JPanel topPanel = new JPanel();
         JPanel pHead1 = new JPanel();
-        lDay = new JLabel("Heute ist " + getDayOfWeek());
-        lTime = new JLabel("und es ist " + getTime() + " Uhr");
+        lDay = new JLabel("<html>Heute ist <font color='#008B8B'>" + getDayOfWeek() + "</font></html>");
+        lTime = new JLabel("<html>und es ist <font color='#008B8B'>" + getTime() + "</font> Uhr</html>");
         bVertretungsplan = new JButton("zum Vertretungsplan");
         bVertretungsplan.addActionListener(this);
         pHead1.add(lDay);
@@ -178,40 +190,20 @@ public class GUI extends JFrame implements ActionListener{
                 }
             });
         }
+
         topPanel.add(pHead1);
         topPanel.add(pTT);
-
-        tabbedPane.addTab("Stundenplan", null, topPanel);
-
-        //frameTT.getContentPane().add(BorderLayout.CENTER, pHead1);
-        //frameTT.getContentPane().add(BorderLayout.WEST, pTT);
-        frameTT.getContentPane().add(BorderLayout.NORTH, mb);
-        frameTT.getContentPane().add(BorderLayout.CENTER, tabbedPane);
-        frameTT.setVisible(true);
-    }
-
-    public void buildRepresentationPlan() {
-        frameRP = new JFrame("Vertretungsplan");
-        frameRP.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frameRP.setSize(500, 400);
-
-        JPanel pHead2 = new JPanel();
-        lDay = new JLabel("Heute ist " + getDayOfWeek());
-        lTime = new JLabel("und es ist " + getTime() + " Uhr");
-        bStundenplan = new JButton("zum Stundenplan");
-        bStundenplan.addActionListener(this);
-        pHead2.add(lDay);
-        pHead2.add(lTime);
-        pHead2.add(bStundenplan);
 
         JPanel pRP = new JPanel();
         JLabel lRP = new JLabel("hier kommt der Vertretungsplan hin");
         pRP.add(lRP);
 
-        frameRP.getContentPane().add(BorderLayout.CENTER, pHead2);
-        frameRP.getContentPane().add(BorderLayout.WEST, pRP);
-        frameRP.getContentPane().add(BorderLayout.NORTH, mb);
-        frameRP.setVisible(true);
+        tabbedPane.addTab("Stundenplan", null, topPanel);
+        tabbedPane.addTab("Vertretungsplan", null, pRP);
+
+        frameTT.getContentPane().add(BorderLayout.NORTH, mb);
+        frameTT.getContentPane().add(BorderLayout.CENTER, tabbedPane);
+        frameTT.setVisible(true);
     }
 
     public void add(Data d) {
@@ -279,15 +271,7 @@ public class GUI extends JFrame implements ActionListener{
 
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
-        if(src == bVertretungsplan) {
-            frameTT.setVisible(false);
-            buildRepresentationPlan();
-        }
-        else if(src == bStundenplan) {
-            frameRP.setVisible(false);
-            buildTimeTable();
-        }
-        else if(src == m11) { //reset
+        if(src == m11) { //reset
             System.exit(0);
             //buildTimeTable();
         }
