@@ -32,7 +32,7 @@ public class StundenplanClient implements StundenplanAPI {
 
         @Override
         public void filter(ClientRequestContext requestContext,
-                           ClientResponseContext responseContext) throws IOException {
+                           ClientResponseContext responseContext) {
             /*String body = new String(responseContext.getEntityStream().readAllBytes());
 
             if (!body.equals("") && responseContext.getMediaType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
@@ -198,6 +198,20 @@ public class StundenplanClient implements StundenplanAPI {
     @Consumes({MediaType.APPLICATION_JSON})
     public Response changePassword(@PathParam("benutzername") String benutzername, String password) {
         return proxy.changePassword(benutzername, password);
+    }
+
+    @GET
+    @Path("/lehrer")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Lehrer[] getLehrer() {
+        return proxy.getLehrer();
+    }
+
+    @GET
+    @Path("/stufen")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Stufe[] getStufen() {
+        return proxy.getStufen();
     }
 
     public void close() {
