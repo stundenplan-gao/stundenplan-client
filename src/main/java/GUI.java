@@ -1,4 +1,5 @@
 import database.NeuerNutzer;
+import util.GUIUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -121,6 +122,7 @@ public class GUI extends JFrame implements ActionListener{
         frame = new JFrame("Stundenplan");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 440);
+        GUIUtil.installBoundsPersistence(frame, "stundenplan", 500, 440);
 
         JTabbedPane tabbedPane = new JTabbedPane();
 

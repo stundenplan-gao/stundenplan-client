@@ -1,17 +1,25 @@
 import client.StundenplanClient;
 import database.NeuerNutzer;
+import util.GUIUtil;
 
 import javax.swing.*;
 import javax.ws.rs.core.Response;
 
 public class Client {
+    private final static String SERVER_URL;
+    static {
+        SERVER_URL = System.getProperty("stundenplan.url", "http://localhost:8080/stundenplan_server/stundenplan");
+    }
     public StundenplanClient client;
     public GUI gui;
 
     public Client() {
         gui = new GUI();
+        GUIUtil.installApplicationIcons();
+        GUIUtil.installBoundsPersistence(gui, "stundenplan", 600, 700);
+        
         int n = JOptionPane.showConfirmDialog(null, "Hast du bereits einen Account?", "Anmeldung", JOptionPane.YES_NO_OPTION);
-        client = new StundenplanClient("http://localhost:8080/stundenplan_server/stundenplan");
+        client = new StundenplanClient(SERVER_URL);
         if((n == JOptionPane.NO_OPTION)) {
             registration();
         }
@@ -72,6 +80,6 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        Client obj = new Client();
+        SwingUtilities.invokeLater(Client::new);
     }
 }

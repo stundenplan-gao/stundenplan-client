@@ -11,6 +11,12 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>jgoodies-looks</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+
         <!-- Compile Time REST API: JAX-RS -->
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -100,19 +106,93 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
-        <outputDirectory>${basedir}/target/classes</outputDirectory>
-
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
-                    <source>12</source>
-                    <target>12</target>
+                    <source>11</source>
+                    <target>11</target>
                     <debug>true</debug>
                     <encoding>UTF-8</encoding>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <target></target>
+                    <finalName>distribution</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>1.7.25</version>
+                <executions>
+                    <execution>
+                        <id>build-distribution</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>console</headerType>
+                            <outfile>target/distribution/stundenplan-client.exe</outfile>
+                            <jar>target/stundenplan-client-1.0-SNAPSHOT.jar</jar>
+                            <errTitle>stundenplan-client</errTitle>
+                            <icon>src/main/resources/stundenplan.ico</icon>
+                            <classPath>
+                                <mainClass>Client</mainClass>
+                                <addDependencies>true</addDependencies>
+                                <jarLocation>lib/</jarLocation>
+                                <preCp>anything</preCp>
+                            </classPath>
+                            <jre>
+                                <minVersion>11</minVersion>
+                                <path>openjdk11</path>                                
+                                <opts>
+                                    <opt>-Dstundenplan.url=https://campus.selfhost.eu/stundenplan_server/stundenplan</opt>
+                                    <opt>-Dswing.defaultlaf=com.jgoodies.looks.windows.WindowsLookAndFeel</opt>
+                                    <opt>-Dswing.useSystemFontSettings=true</opt>
+                                </opts>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>1.0.0.0</fileVersion>
+                                <txtFileVersion>Version 1.0</txtFileVersion>
+                                <fileDescription>Client zur Anzeige des individuellen Stundeplans</fileDescription>
+                                <copyright>Copyright 2020, Band of Three</copyright>
+                                <productVersion>1.0.0.0</productVersion>
+                                <txtProductVersion>Version 1.0</txtProductVersion>
+                                <productName>Stundenplan Client für das Gymnasium am Ölberg,
+                                    Königswinter, DE</productName>
+                                <internalName>ccne</internalName>
+                                <originalFilename>stundenplan-client.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
