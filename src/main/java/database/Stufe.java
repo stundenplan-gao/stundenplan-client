@@ -48,8 +48,7 @@ public class Stufe {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Stufe stufe1 = (Stufe) o;
-        return Objects.equals(id, stufe1.id) &&
-                Objects.equals(stufe, stufe1.stufe);
+        return Objects.equals(stufe, stufe1.stufe);
     }
 
     @Override

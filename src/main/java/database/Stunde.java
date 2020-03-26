@@ -67,14 +67,12 @@ public class Stunde {
         if (o == null || getClass() != o.getClass()) return false;
         Stunde stunde1 = (Stunde) o;
         return tag == stunde1.tag &&
-                stunde == stunde1.stunde &&
-                Objects.equals(id, stunde1.id) &&
-                Objects.equals(kurse, stunde1.kurse);
+                stunde == stunde1.stunde;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, tag, stunde, kurse);
+        return Objects.hash(tag, stunde);
     }
 
     @Override

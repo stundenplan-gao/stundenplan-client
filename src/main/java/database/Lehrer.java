@@ -88,8 +88,7 @@ public class Lehrer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Lehrer lehrer = (Lehrer) o;
-        return id == lehrer.id &&
-                anrede == lehrer.anrede &&
+        return  anrede.equals(lehrer.anrede) &&
                 Objects.equals(nachname, lehrer.nachname) &&
                 Objects.equals(kuerzel, lehrer.kuerzel);
     }

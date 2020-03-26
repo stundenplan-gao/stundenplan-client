@@ -115,7 +115,6 @@ public class Kurs {
         return fach.equals(kurs.fach) &&
                 stufe.equals(stufe) &&
                 lehrer.equals(lehrer) &&
-                Objects.equals(id, kurs.id) &&
                 Objects.equals(bezeichnung, kurs.bezeichnung);
     }
 

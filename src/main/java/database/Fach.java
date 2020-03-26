@@ -72,8 +72,7 @@ public class Fach {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Fach fach1 = (Fach) o;
-        return Objects.equals(id, fach1.id) &&
-                Objects.equals(fach, fach1.fach) &&
+        return  Objects.equals(fach, fach1.fach) &&
                 Objects.equals(lehrer, fach1.lehrer);
     }
 

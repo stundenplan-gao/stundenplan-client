@@ -113,8 +113,7 @@ public class Schueler {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Schueler schueler = (Schueler) o;
-        return Objects.equals(id, schueler.id) &&
-                Objects.equals(stufe, schueler.stufe) &&
+        return  Objects.equals(stufe, schueler.stufe) &&
                 Objects.equals(benutzername, schueler.benutzername) &&
                 Objects.equals(passwortHash, schueler.passwortHash) &&
                 Objects.equals(vorname, schueler.vorname) &&
